@@ -44,35 +44,64 @@ flowchart LR
 
 ### 2. HA Pair (Active/Passive or Active/Active)
 - Two FortiGate VMs in failover configuration for production-grade resilience.
-
-```mermaid
-flowchart LR
-    Internet((Internet)) --> ELB[External LB]
-    ELB --> FG1[FortiGate VM1]
-    ELB --> FG2[FortiGate VM2]
-    FG1 & FG2 --> ILB[Internal LB]
-    ILB --> App1[App1]
-    ILB --> App2[App2]
-```
-
-### 3. Autoscaling Group (Advanced, Large Scale)
-- Multiple FortiGate VMs managed as a group, scaling with demand (requires advanced setup).
+- Uses External and Internal Load Balancers for redundancy and seamless failover.
+- Management interfaces are separated for secure administration.
 
 ```mermaid
 flowchart TD
-    Internet((Internet)) --> ELB[External LB]
-    ELB --> FG[FortiGate Autoscale Group]
-    FG --> ILB[Internal LB]
-    ILB --> Apps[Applications]
+    Internet((Internet)) --> ELB[External Load Balancer]
+    ELB --> FG1[FortiGate VM1]
+    ELB --> FG2[FortiGate VM2]
+    FG1 -- Untrust --> ELB
+    FG2 -- Untrust --> ELB
+    FG1 -- Trust --> ILB[Internal Load Balancer]
+    FG2 -- Trust --> ILB
+    ILB --> App1[App1]
+    ILB --> App2[App2]
+    FG1 -. Mgmt .-> Mgmt1[Mgmt Subnet]
+    FG2 -. Mgmt .-> Mgmt2[Mgmt Subnet]
 ```
+
+**Diagram Explanation:**
+- **External Load Balancer (ELB):** Distributes inbound traffic to both FortiGate VMs for high availability.
+- **FortiGate VM1/VM2:** Deployed in active/passive or active/active mode for failover and redundancy.
+- **Internal Load Balancer (ILB):** Handles traffic from FortiGate to internal applications.
+- **Mgmt Subnet:** Dedicated management interfaces for secure admin access.
+
+### 3. Autoscaling Group (Advanced, Large Scale)
+- Multiple FortiGate VMs managed as a group, scaling with demand (requires advanced setup).
+- Load balancers handle both ingress and egress, and health checks ensure only healthy instances receive traffic.
+
+```mermaid
+flowchart TD
+    Internet((Internet)) --> ELB[External Load Balancer]
+    ELB --> FG[FortiGate Autoscale Group]
+    subgraph Autoscale Group
+        FG1[FortiGate VM1]
+        FG2[FortiGate VM2]
+        FG3[FortiGate VM3]
+    end
+    FG --> ILB[Internal Load Balancer]
+    ILB --> Apps[Applications]
+    FG1 -. Mgmt .-> Mgmt1[Mgmt Subnet]
+    FG2 -. Mgmt .-> Mgmt2[Mgmt Subnet]
+    FG3 -. Mgmt .-> Mgmt3[Mgmt Subnet]
+```
+
+**Diagram Explanation:**
+- **Autoscale Group:** FortiGate VMs are automatically added/removed based on load.
+- **External/Internal Load Balancers:** Ensure seamless scaling and failover.
+- **Mgmt Subnet:** Each VM has a dedicated management interface.
 
 ### 4. Hub-and-Spoke / Transit VPC (Centralized Inspection)
 - FortiGate cluster in a central VPC inspects traffic from multiple spoke VPCs/projects.
+- Spoke VPCs connect via VPN or VPC peering for centralized security enforcement.
 
 ```mermaid
 flowchart TD
     subgraph Hub VPC
         FG[FortiGate Cluster]
+        ILB[Internal Load Balancer]
     end
     subgraph Spoke1
         S1[Workload1]
@@ -82,8 +111,15 @@ flowchart TD
     end
     S1 -- VPN/Peering --> FG
     S2 -- VPN/Peering --> FG
-    FG --> Internet((Internet))
+    FG --> ILB
+    ILB --> Internet((Internet))
 ```
+
+**Diagram Explanation:**
+- **Hub VPC:** Centralized FortiGate cluster inspects all inter-VPC traffic.
+- **Spoke VPCs:** Workloads in separate VPCs connect to the hub for security inspection.
+- **VPN/Peering:** Secure connectivity between spokes and hub.
+- **Internal Load Balancer:** Distributes traffic to FortiGate cluster.
 
 ---
 
@@ -111,10 +147,19 @@ flowchart TD
     Internet((Internet)) --> ELB[External LB]
     ELB --> FG1[FortiGate VM1]
     ELB --> FG2[FortiGate VM2]
-    FG1 & FG2 --> ILB[Internal LB]
+    FG1 -- Untrust --> ELB
+    FG2 -- Untrust --> ELB
+    FG1 -- Trust --> ILB[Internal LB]
+    FG2 -- Trust --> ILB
     ILB --> Trust[Trust Subnet]
-    FG1 & FG2 --> Mgmt[Mgmt Subnet]
+    FG1 -. Mgmt .-> Mgmt1[Mgmt Subnet]
+    FG2 -. Mgmt .-> Mgmt2[Mgmt Subnet]
 ```
+
+**Diagram Explanation:**
+- **External/Internal Load Balancers:** Provide redundancy and scale for both ingress and egress traffic.
+- **Multi-NIC:** Each FortiGate VM has separate interfaces for management, untrust, and trust.
+- **Mgmt Subnet:** Dedicated for secure administration.
 
 ---
 
