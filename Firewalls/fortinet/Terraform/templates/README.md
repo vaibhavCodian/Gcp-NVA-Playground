@@ -98,6 +98,7 @@ config vpn ipsec phase1-interface
 end
 ```
 
+
 ## Template Syntax
 - `${variable}`: Placeholder for values injected by Terraform's `templatefile()` function.
 - Standard FortiOS CLI configuration blocks (e.g., `config system interface`, `config firewall policy`).
@@ -105,9 +106,13 @@ end
 ## Design Structure (Mermaid Diagram)
 ```mermaid
 graph TD
-  A[Terraform] -->|templatefile()| B[FortiGate Template]
-  B --> C[FortiGate VM Startup]
-  C --> D[Configured FortiGate]
+  A[Terraform]
+  B[FortiGate Template]
+  C[FortiGate VM Startup]
+  D[Configured FortiGate]
+  A --> B
+  B --> C
+  C --> D
 ```
 
 ## Best Practices
