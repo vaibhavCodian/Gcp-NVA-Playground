@@ -33,13 +33,11 @@ This folder contains all Terraform code, modules, environments, and templates re
 ## How the Pieces Fit Together
 ```mermaid
 flowchart TD
-    subgraph Environment (dev)
-        main[main.tf] --> vpcmod[vpc module]
-        main --> subnetmod[subnet module]
-        main --> fwmod[firewall module]
-        main --> fgmod[compute-instance module]
-        fgmod --> tpl[fortigate_config.tpl]
-    end
+    main[main.tf] --> vpcmod[VPC Module]
+    main --> subnetmod[Subnet Module]
+    main --> fwmod[Firewall Module]
+    main --> fgmod[Compute-Instance Module]
+    fgmod --> tpl[fortigate_config.tpl]
 ```
 
 ---
