@@ -1,0 +1,9 @@
+# This is a minimal bootstrap configuration for a Palo Alto VM-Series POC.
+# It sets the hostname, admin password, and enables DHCP on dataplane interfaces.
+type=dhcp-client
+hostname=paloalto-fw-poc
+mgmt-interface-swap=enable
+admin-username=admin
+admin-password=${admin_password}
+dhcp-send-hostname=yes
+dhcp-send-client-id=yes

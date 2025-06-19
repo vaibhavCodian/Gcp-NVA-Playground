@@ -13,8 +13,18 @@ crash.*.log
 # password, private keys, and other secrets. These should not be part of version 
 # control as they are data points which are potentially sensitive and subject 
 # to change depending on the environment.
-*.tfvars
-*.tfvars.json
+# If you have specific .tfvars files that you want to include, you can add them
+# to the repository by negating the pattern below.
+# For example, if you want to include a file named `example.tfvars`, you can
+# add `!example.tfvars` to the end of this file.
+# Note: If you have a specific .tfvars file that you want to include, you
+# can add it to the repository by negating the pattern below.
+# !example.tfvars
+# !example.tfvars.json
+# *_example.tfvars
+# *_example.tfvars.json
+# *.tfvars
+# *.tfvars.json
 
 # Ignore override files as they are usually used to override resources locally and so
 # are not checked in

@@ -1,8 +1,5 @@
-# Creates Google Compute Engine instances.
-# The lifecycle block is static to conform to HCL rules.
 resource "google_compute_instance" "instance" {
   for_each = var.instances
-
   project        = var.project_id
   zone           = var.zone
   name           = each.key
@@ -22,6 +19,7 @@ resource "google_compute_instance" "instance" {
     for_each = each.value.network_interfaces
     content {
       subnetwork = network_interface.value.subnet_self_link
+      network_ip = lookup(network_interface.value, "internal_ip", null)
       dynamic "access_config" {
         for_each = network_interface.value.nat ? [1] : []
         content {}
@@ -32,18 +30,12 @@ resource "google_compute_instance" "instance" {
   metadata = each.value.metadata
 
   service_account {
-    email  = "default"
-    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+    email  = each.value.service_account_email
+    scopes = ["cloud-platform"]
   }
-
-  allow_stopping_for_update = true
 
   lifecycle {
     create_before_destroy = true
-    ignore_changes = [
-      # This prevents Terraform from re-creating the instance if the
-      # startup-script metadata changes after initial creation.
-      metadata.startup-script,
-    ]
+    ignore_changes        = [metadata]
   }
 }

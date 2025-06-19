@@ -13,6 +13,7 @@ This folder contains all Terraform code, modules, environments, and templates re
 
 ## Key Elements
 ### 1. Environments
+
 - Each subfolder (e.g., `dev/`) contains:
   - `main.tf`: Main deployment logic, wiring modules together
   - `variables.tf`: Input variables for the environment
@@ -20,17 +21,20 @@ This folder contains all Terraform code, modules, environments, and templates re
   - `terraform.tfvars`: (optional) Environment-specific values
 
 ### 2. Modules
+
 - **vpc/**: Creates VPC networks
 - **subnet/**: Creates subnets in VPCs
 - **firewall/**: Manages GCP firewall rules
 - **compute-instance/**: Deploys FortiGate VM(s) with network interfaces and metadata
 
 ### 3. Templates
+
 - **fortigate_config.tpl**: Startup script for initial FortiGate configuration (interfaces, routes, policies)
 
 ---
 
 ## How the Pieces Fit Together
+
 ```mermaid
 flowchart TD
     main[main.tf] --> vpcmod[VPC Module]
@@ -43,6 +47,7 @@ flowchart TD
 ---
 
 ## How to Use
+
 1. Edit variables in `environments/dev/variables.tf` and `terraform.tfvars` as needed.
 2. Run `terraform init` and `terraform apply` in the environment folder.
 3. Outputs will provide FortiGate VM details and next steps for access.
@@ -50,6 +55,7 @@ flowchart TD
 ---
 
 ## Extending
+
 - Add new modules for additional GCP/NVA features.
 - Add new environments (e.g., `prod/`, `test/`).
 - Update templates for advanced FortiGate configuration.
